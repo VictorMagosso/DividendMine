@@ -1,7 +1,9 @@
+import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/core/core.dart';
 import 'package:DividendMine/db/db_helper.dart';
 import 'package:DividendMine/model/stock.dart';
 import 'package:flutter/material.dart';
+import 'package:state_notifier/state_notifier.dart';
 
 class StockCardWidget extends StatefulWidget {
   @override
@@ -9,18 +11,20 @@ class StockCardWidget extends StatefulWidget {
 }
 
 class _StockCardWidgetState extends State<StockCardWidget> {
-  DatabaseHelper db = DatabaseHelper();
+  final stockController = StockController();
   List<Stock> allStocks = [];
 
   @override
   void initState() {
     super.initState();
-
-    setState(() {
-      db.getAllStocks().then((list) {
-        allStocks = list;
+    Future getStocks() async {
+      var res = await stockController.getAllStocks();
+      setState(() {
+        allStocks = res;
       });
-    });
+    }
+
+    getStocks();
   }
 
   @override

@@ -1,10 +1,17 @@
 import 'package:DividendMine/core/core.dart';
+import 'package:DividendMine/db/db_helper.dart';
 import 'package:DividendMine/home/widgets/button_actions_widget/button_actions_widget.dart';
+import 'package:DividendMine/model/stock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ModalAddStockWidget extends StatelessWidget {
   final bool isVisible;
+  DatabaseHelper db = DatabaseHelper();
+
+  var codeController = TextEditingController();
+  var qttController = TextEditingController();
+  var valPerStockController = TextEditingController();
 
   ModalAddStockWidget({Key? key, required this.isVisible})
       : assert([true, false].contains(isVisible)),
@@ -42,6 +49,7 @@ class ModalAddStockWidget extends StatelessWidget {
                       style: TextStyle(
                         color: AppColors.accent,
                       ),
+                      controller: codeController,
                       textCapitalization: TextCapitalization.characters,
                       maxLength: 6,
                       maxLengthEnforcement: MaxLengthEnforcement.enforced,
@@ -66,6 +74,7 @@ class ModalAddStockWidget extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: TextField(
+                      controller: qttController,
                       keyboardType: TextInputType.number,
                       style: TextStyle(
                         color: AppColors.accent,
@@ -84,6 +93,7 @@ class ModalAddStockWidget extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: TextField(
+                      controller: valPerStockController,
                       keyboardType: TextInputType.number,
                       style: TextStyle(
                         color: AppColors.accent,
@@ -102,8 +112,10 @@ class ModalAddStockWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ButtonActionsWidget(label: 'Fechar'),
-                      ButtonActionsWidget(label: 'Confirmar'),
+                      GestureDetector(
+                        child: ButtonActionsWidget(label: 'Confirmar'),
+                        onTap: () => saveOrUpdateStock(),
+                      ),
                     ],
                   )
                 ],
@@ -111,5 +123,20 @@ class ModalAddStockWidget extends StatelessWidget {
             ),
           ),
         ));
+  }
+
+  void saveOrUpdateStock() {
+    DatabaseHelper db = DatabaseHelper();
+    Stock stock = Stock(
+        quantity: int.parse(qttController.text),
+        valuePerStock: double.parse(valPerStockController.text),
+        stockCode: codeController.text);
+
+    var res = db.persist(stock);
+    if (res == 0) {
+//aparece um toast
+    } else {
+      //dismiss modal
+    }
   }
 }

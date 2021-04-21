@@ -4,7 +4,11 @@ class Stock {
   double valuePerStock = 0.0;
   String stockCode = '';
 
-  Stock(this.id, this.quantity, this.valuePerStock, this.stockCode);
+  ///constructor com parametros nomeados para setar a obrigatoriedade de cada um
+  Stock(
+      {required this.quantity,
+      required this.valuePerStock,
+      required this.stockCode});
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
