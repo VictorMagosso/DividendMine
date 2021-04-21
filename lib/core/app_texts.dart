@@ -21,4 +21,7 @@ class AppTextStyles {
 
   static final TextStyle cardTotalMoney = GoogleFonts.roboto(
       color: AppColors.accent, fontSize: 28, fontWeight: FontWeight.w400);
+
+  static final TextStyle underline = GoogleFonts.roboto(
+      color: AppColors.accent, fontSize: 0, fontWeight: FontWeight.w400);
 }
