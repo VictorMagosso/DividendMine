@@ -16,6 +16,12 @@ class AppTextStyles {
   static final TextStyle cardTitle = GoogleFonts.roboto(
       color: AppColors.secondary, fontSize: 24, fontWeight: FontWeight.w400);
 
+  static final TextStyle sumUpTitle = GoogleFonts.roboto(
+      color: AppColors.secondary, fontSize: 20, fontWeight: FontWeight.w400);
+
+  static final TextStyle money = GoogleFonts.roboto(
+      color: AppColors.primary, fontSize: 20, fontWeight: FontWeight.w400);
+
   static final TextStyle cardText = GoogleFonts.roboto(
       color: AppColors.accent, fontSize: 14, fontWeight: FontWeight.w400);
 

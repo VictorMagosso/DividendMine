@@ -1,14 +1,25 @@
+import 'dart:math';
+
 import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/core/core.dart';
-import 'package:DividendMine/db/db_helper.dart';
 import 'package:DividendMine/model/stock.dart';
+import 'package:DividendMine/utils/format_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 class StockCardWidget extends StatefulWidget {
   @override
   _StockCardWidgetState createState() => _StockCardWidgetState();
 }
+
+List<Color> colors = [
+  AppColors.card1,
+  AppColors.card2,
+  AppColors.card3,
+];
+
+Icon icon = Icon(Icons.apartment);
+
+var moneyFormatter = MoneyFormatter();
 
 class _StockCardWidgetState extends State<StockCardWidget> {
   final stockController = StockController();
@@ -17,27 +28,36 @@ class _StockCardWidgetState extends State<StockCardWidget> {
   @override
   void initState() {
     super.initState();
-    Future getStocks() async {
-      var res = await stockController.getAllStocks();
-      setState(() {
-        allStocks = res;
-      });
-    }
+    fetchStocks();
+  }
 
-    getStocks();
+  void fetchStocks() async {
+    var res = await stockController.getAllStocks();
+    setState(() {
+      allStocks = res;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 14),
-        itemCount: allStocks.length,
-        itemBuilder: (context, index) {
-          return _allStocks(context, index);
-        },
-      ),
-    );
+    return allStocks.length != 0
+        ? Expanded(
+            child: RefreshIndicator(
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 14),
+                itemCount: allStocks.length,
+                itemBuilder: (context, index) {
+                  return _allStocks(context, index);
+                },
+              ),
+              onRefresh: _getStocks,
+            ),
+          )
+        : Center(
+            child: Padding(
+            padding: const EdgeInsets.only(top: 80),
+            child: CircularProgressIndicator(),
+          ));
   }
 
   _allStocks(BuildContext context, int index) {
@@ -51,8 +71,10 @@ class _StockCardWidgetState extends State<StockCardWidget> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(width: 0.2, color: AppColors.secondary),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        width: 0.2,
+                        color: colors.elementAt(Random().nextInt(3))),
                     gradient: AppGradients.linear),
               ),
               Column(
@@ -66,9 +88,29 @@ class _StockCardWidgetState extends State<StockCardWidget> {
                           direction: Axis.horizontal,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              allStocks[index].stockCode,
-                              style: AppTextStyles.cardTitle,
+                            Row(
+                              children: [
+                                allStocks[index].stockCode[
+                                            allStocks[index].stockCode.length -
+                                                1] ==
+                                        '1'
+                                    ? Icon(
+                                        Icons.apartment_sharp,
+                                        color: AppColors.secondary,
+                                      )
+                                    : Icon(
+                                        Icons.work_outline,
+                                        color: AppColors.secondary,
+                                      ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(allStocks[index].stockCode,
+                                      style: TextStyle(
+                                          color: colors
+                                              .elementAt(Random().nextInt(3)),
+                                          fontSize: 24)),
+                                ),
+                              ],
                             ),
                             Text(
                               'Qtde.: ${allStocks[index].quantity}',
@@ -86,7 +128,7 @@ class _StockCardWidgetState extends State<StockCardWidget> {
                         spacing: 165,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(10.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -97,7 +139,7 @@ class _StockCardWidgetState extends State<StockCardWidget> {
                                       style: AppTextStyles.cardText,
                                     ),
                                     Text(
-                                      'R\$ ${allStocks[index].valuePerStock}',
+                                      '${moneyFormatter.moneyHandler(allStocks[index].valuePerStock)}',
                                       style: AppTextStyles.cardText,
                                     ),
                                   ],
@@ -109,7 +151,7 @@ class _StockCardWidgetState extends State<StockCardWidget> {
                                       style: AppTextStyles.cardText,
                                     ),
                                     Text(
-                                      'R\$ ${(allStocks[index].quantity * allStocks[index].valuePerStock).toStringAsFixed(2).replaceAll('.', ',')}',
+                                      '${moneyFormatter.moneyHandler((allStocks[index].quantity * allStocks[index].valuePerStock))}',
                                       style: AppTextStyles.cardTotalMoney,
                                     ),
                                   ],
@@ -126,5 +168,11 @@ class _StockCardWidgetState extends State<StockCardWidget> {
         ),
       ),
     );
+  }
+
+  Future<void> _getStocks() async {
+    setState(() {
+      fetchStocks();
+    });
   }
 }

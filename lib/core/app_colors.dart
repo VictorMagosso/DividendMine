@@ -14,4 +14,10 @@ class AppColors {
   static final Color border = Color(0xFF92A3EC);
 
   static final Color invisible = Color(0x00FFFFFF);
+
+  static final Color card1 = Color(0xFF4E6BE9);
+  static final Color card2 = Color(0xFF7D4EE9);
+  static final Color card3 = Color(0xFF4E51E9);
+
+  static final Color bgOpacity = Color(0x9D000000);
 }

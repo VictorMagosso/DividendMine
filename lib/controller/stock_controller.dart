@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:DividendMine/model/stock.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:state_notifier/state_notifier.dart';
 import '../db/db_helper.dart';
 
 class StockController {
@@ -27,5 +29,15 @@ class StockController {
 
   FutureOr<Stock> getStock(int id) async {
     return await db.getStock(id);
+  }
+
+  FutureOr<double> sumAllDividend() async {
+    var stocks = await getAllStocks();
+    var allDividends = [];
+    for (var item in stocks) {
+      allDividends.add(item.valuePerStock * item.quantity);
+    }
+
+    return allDividends.reduce((a, b) => a + b);
   }
 }
