@@ -20,17 +20,9 @@ class AppGradients {
     0.695
   ], transform: GradientRotation(2.13959913 * pi));
 
-  static final sumUpBg = LinearGradient(colors: [
-    Color(0xFF181529),
-    Color(0xFF251D44),
-  ], stops: [
-    0.0,
-    0.695
-  ], transform: GradientRotation(2.13959913 * pi));
-
-  static final sumUpLinear = LinearGradient(colors: [
-    Color(0xFF270F7E),
+  static final addStockBg = LinearGradient(colors: [
     Color(0xFF131314),
+    Color(0xFF070A11),
   ], stops: [
     0.0,
     0.695

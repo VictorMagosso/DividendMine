@@ -30,4 +30,7 @@ class AppTextStyles {
 
   static final TextStyle underline = GoogleFonts.roboto(
       color: AppColors.accent, fontSize: 0, fontWeight: FontWeight.w400);
+
+  static final TextStyle inputStock = GoogleFonts.roboto(
+      color: AppColors.accent, fontSize: 16, fontWeight: FontWeight.w400);
 }

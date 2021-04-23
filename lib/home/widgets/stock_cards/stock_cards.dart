@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/core/core.dart';
 import 'package:DividendMine/model/stock.dart';
 import 'package:DividendMine/utils/format_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class StockCardWidget extends StatefulWidget {
   @override
@@ -19,15 +21,33 @@ List<Color> colors = [
 ];
 
 Icon icon = Icon(Icons.apartment);
+String? _snackBarMessage;
+String _successMessage = 'Papel removido.';
+String _errorMessage =
+    'Algo deu errado ao deletar... Tente novamente mais tarde.';
 
 var moneyFormatter = MoneyFormatter();
 
-class _StockCardWidgetState extends State<StockCardWidget> {
+class _StockCardWidgetState extends State<StockCardWidget>
+    with TickerProviderStateMixin {
   final stockController = StockController();
   List<Stock> allStocks = [];
+  var rotationController;
+  var slideController;
 
   @override
   void initState() {
+    rotationController = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    );
+    rotationController.repeat();
+
+    slideController = AnimationController(
+      duration: const Duration(milliseconds: 5000),
+      vsync: this,
+    );
+    slideController.repeat();
     super.initState();
     fetchStocks();
   }
@@ -55,9 +75,27 @@ class _StockCardWidgetState extends State<StockCardWidget> {
             ),
           )
         : Center(
-            child: Padding(
-            padding: const EdgeInsets.only(top: 80),
-            child: CircularProgressIndicator(),
+            child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                // child: AnimatedSwitcher(
+                //   duration: Duration(milliseconds: 500),
+                child: RotationTransition(
+                  turns:
+                      Tween(begin: 0.0, end: 1.0).animate(rotationController),
+                  child: Image.asset(
+                    AppImages.noMoney,
+                    scale: 2,
+                  ),
+                ),
+              ),
+              // ),
+              Text(
+                'Nenhum papel cadastrado',
+                style: TextStyle(color: AppColors.accent, fontSize: 18),
+              ),
+            ],
           ));
   }
 
@@ -220,14 +258,6 @@ class _StockCardWidgetState extends State<StockCardWidget> {
                     FloatingActionButton.extended(
                       onPressed: () {
                         Navigator.pop(context);
-                        var snackBar = SnackBar(
-                            content: Text(
-                                'Algo deu errado ao deletar... Tente novamente mais tarde.'),
-                            action: SnackBarAction(
-                              label: 'OK',
-                              onPressed: () => {},
-                            ));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       },
                       icon: Icon(Icons.close, color: AppColors.primaryLight),
                       label: Text(
@@ -240,17 +270,12 @@ class _StockCardWidgetState extends State<StockCardWidget> {
                       onPressed: () {
                         Navigator.pop(context);
                         var duration = Duration(seconds: 6);
-                        var timer = Timer(duration, () {
-                          stockController.deleteStock(id);
+                        String msg = '';
+                        var timer = Timer(duration, () async {
+                          var res = await stockController.deleteStock(id);
+                          res ? msg = _successMessage : msg = _errorMessage;
                         });
-
-                        var snackBar = SnackBar(
-                            content: Text('Papel removido.'),
-                            action: SnackBarAction(
-                              label: 'DESFAZER',
-                              onPressed: () => {timer.cancel()},
-                            ));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        createSnackBar(context, msg, 'DESFAZER', timer);
                       },
                       label: Text('Deletar'),
                       backgroundColor: AppColors.secondary,
@@ -261,5 +286,16 @@ class _StockCardWidgetState extends State<StockCardWidget> {
             ],
           );
         });
+  }
+
+  void createSnackBar(
+      BuildContext context, String message, String label, Timer? timer) {
+    var snackBar = SnackBar(
+        content: Text(_successMessage),
+        action: SnackBarAction(
+          label: 'DESFAZER',
+          onPressed: () => {timer?.cancel()},
+        ));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

@@ -14,8 +14,8 @@ class StockController {
     return true;
   }
 
-  FutureOr<void> deleteStock(int id) async {
-    await db.delete(id);
+  FutureOr<bool> deleteStock(int id) async {
+    return await db.delete(id);
   }
 
   FutureOr<void> updateStock(Stock stock) async {
@@ -41,6 +41,9 @@ class StockController {
       allDividends.add(item.valuePerStock * item.quantity);
     }
 
+    if (allDividends.length == 0) {
+      return 0;
+    }
     return allDividends.reduce((a, b) => a + b);
   }
 }

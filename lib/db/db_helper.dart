@@ -43,13 +43,13 @@ class DatabaseHelper {
     return res;
   }
 
-  FutureOr<String> delete(int id) async {
+  FutureOr<bool> delete(int id) async {
     Database db = await this.database;
     try {
       await db.rawDelete('DELETE FROM $tableName WHERE id = $id');
-      return 'O item ${stockCode.toUpperCase()} foi deletado!';
+      return true;
     } catch (e) {
-      return 'Não foi possível deletar.';
+      return false;
     }
   }
 
