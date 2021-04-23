@@ -1,6 +1,6 @@
 import 'package:DividendMine/home/widgets/app_bar/app_bar_widget.dart';
-import 'package:DividendMine/home/widgets/modal_add_stock/modal_add_stock.dart';
 import 'package:DividendMine/home/widgets/stock_cards/stock_cards.dart';
+import 'package:DividendMine/pages/add_stock_page.dart';
 import '../core/core.dart';
 import 'package:flutter/material.dart';
 
@@ -21,17 +21,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: AppBarWidget(),
         body: Column(
-          children: [
-            ModalAddStockWidget(
-              isVisible: _isVisible,
-            ),
-            StockCardWidget()
-          ],
+          children: [StockCardWidget()],
         ),
         backgroundColor: AppColors.primaryLight,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            toggleFormAddStock();
+            openAddStockPage(context);
           },
           label: Text(_labelFab),
           icon: _icon,
@@ -39,19 +34,20 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  void toggleFormAddStock() {
-    setState(() {
-      if (_isVisible) {
-        _isVisible = false;
-        _labelFab = 'Adicionar';
-        _fabBgColor = AppColors.secondary;
-        _icon = Icon(Icons.add);
-      } else {
-        _isVisible = true;
-        _labelFab = 'Cancelar';
-        _fabBgColor = AppColors.bgAddStockCardColor;
-        _icon = Icon(Icons.close);
-      }
-    });
+  void openAddStockPage(BuildContext context) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (c, a1, a2) => AddStockPage(),
+        transitionsBuilder: (c, anim, a2, child) => SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 1),
+            end: Offset.zero,
+          ).animate(anim),
+          child: child,
+        ),
+        transitionDuration: Duration(milliseconds: 300),
+      ),
+    );
   }
 }

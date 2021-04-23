@@ -8,36 +8,34 @@ import 'package:flutter/material.dart';
 class AppBarWidget extends PreferredSize {
   AppBarWidget()
       : super(
-          preferredSize: Size.fromHeight(300),
-          child: Expanded(
-            child: Container(
-                width: double.maxFinite,
-                height: 240,
-                child: Stack(children: [
-                  Container(
-                    width: double.maxFinite,
-                    height: 140,
-                    padding: EdgeInsets.only(top: 50),
-                    decoration:
-                        BoxDecoration(gradient: AppGradients.appBarLinear),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Meus dividendos",
-                          style: AppTextStyles.title,
-                        ),
-                      ],
-                    ),
+          preferredSize: Size.fromHeight(210),
+          child: Container(
+              width: double.maxFinite,
+              height: 210,
+              child: Stack(children: [
+                Container(
+                  width: double.maxFinite,
+                  height: 140,
+                  padding: EdgeInsets.only(top: 40),
+                  decoration:
+                      BoxDecoration(gradient: AppGradients.appBarLinear),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Meus dividendos",
+                        style: AppTextStyles.title,
+                      ),
+                    ],
                   ),
-                  Align(
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 100),
                     alignment: Alignment.bottomCenter,
-                    child: Container(
-                      margin: EdgeInsets.only(top: 100),
-                      alignment: Alignment.bottomCenter,
-                      child: SumUp(),
-                    ),
-                  )
-                ])),
-          ),
+                    child: SumUp(),
+                  ),
+                )
+              ])),
         );
 }

@@ -37,56 +37,61 @@ class _SumUpState extends State<SumUp> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-          child: Container(
-            margin: EdgeInsets.only(left: 24, right: 24, bottom: 34),
-            decoration: BoxDecoration(
-              color: AppColors.bgOpacity.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: AppColors.card1, width: 1),
-            ),
-            child: Stack(children: [
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      width: double.maxFinite,
-                      height: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Column(
+    return Container(
+      margin: EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+        color: AppColors.primaryLight,
+        borderRadius: BorderRadius.circular(300),
+      ),
+      child: Stack(children: [
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                width: double.maxFinite,
+                height: 100,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              child: Text(
-                                'Previsão para o próximo mês',
-                                style: AppTextStyles.sumUpTitle,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 25),
-                              child: Text(
-                                '$formattedValue',
-                                style: TextStyle(
-                                    color: AppColors.accent, fontSize: 24),
-                                textAlign: TextAlign.center,
-                              ),
+                            Icon(Icons.bar_chart, color: AppColors.secondary),
+                            Text(
+                              'Previsão de dividendos',
+                              style: AppTextStyles.sumUpTitle,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  )
-                ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: 25, right: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.arrow_right,
+                              color: AppColors.positive,
+                            ),
+                            Text(
+                              '$formattedValue',
+                              style: TextStyle(
+                                  color: AppColors.accent, fontSize: 24),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ]),
-          ),
+            )
+          ],
         ),
-      ),
+      ]),
     );
   }
 }

@@ -7,8 +7,11 @@ import '../db/db_helper.dart';
 class StockController {
   static DatabaseHelper db = DatabaseHelper();
 
-  FutureOr<void> persistStock(Stock stock) async {
-    await db.persist(stock);
+  Future<bool> persistStock(Stock stock) async {
+    if (await db.persist(stock) == 0) {
+      return false;
+    }
+    return true;
   }
 
   FutureOr<void> deleteStock(int id) async {

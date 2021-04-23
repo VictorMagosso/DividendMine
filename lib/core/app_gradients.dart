@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 class AppGradients {
   static final linear = LinearGradient(colors: [
-    Color(0xFF09090A),
-    Color(0xFF161616),
+    Color(0xFF16162B),
+    Color(0xFF1D1A1A),
   ], stops: [
     0.0,
     0.695
@@ -21,8 +21,16 @@ class AppGradients {
   ], transform: GradientRotation(2.13959913 * pi));
 
   static final sumUpBg = LinearGradient(colors: [
-    Color(0xFF120F1F),
-    Color(0xFF1F183A),
+    Color(0xFF181529),
+    Color(0xFF251D44),
+  ], stops: [
+    0.0,
+    0.695
+  ], transform: GradientRotation(2.13959913 * pi));
+
+  static final sumUpLinear = LinearGradient(colors: [
+    Color(0xFF270F7E),
+    Color(0xFF131314),
   ], stops: [
     0.0,
     0.695
