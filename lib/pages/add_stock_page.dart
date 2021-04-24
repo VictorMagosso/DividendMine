@@ -9,7 +9,7 @@ class AddStockPage extends StatelessWidget {
   final stockController = StockController();
   var codeController = TextEditingController();
   var qttController = TextEditingController();
-  var dateToReceive = TextEditingController();
+  var dateController = TextEditingController();
   var valPerStockController =
       MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
 
@@ -121,7 +121,7 @@ class AddStockPage extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 maxLength: 2,
                 maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                controller: dateToReceive,
+                controller: dateController,
                 style: AppTextStyles.inputStock,
                 decoration: InputDecoration(
                   prefix: Text(
@@ -181,7 +181,8 @@ class AddStockPage extends StatelessWidget {
     Stock stock = Stock(
         int.parse(qttController.text),
         double.parse(valPerStockController.text.replaceAll(',', '.')),
-        codeController.text.toUpperCase());
+        codeController.text.toUpperCase(),
+        int.parse(dateController.text));
     var res = await stockController.persistStock(stock);
 
     // ignore: unnecessary_statements

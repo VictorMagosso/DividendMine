@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/home/widgets/app_bar/app_bar_widget.dart';
 import 'package:DividendMine/home/widgets/stock_cards/stock_cards.dart';
 import 'package:DividendMine/pages/add_stock_page.dart';
@@ -15,13 +18,38 @@ class _HomePageState extends State<HomePage> {
   String _labelFab = 'Adicionar';
   Color _fabBgColor = AppColors.secondary;
   Icon _icon = Icon(Icons.add);
+  var stockController = StockController();
+  var dividends = [];
+
+  @override
+  void initState() {
+    _dividendsByInterval();
+    super.initState();
+    stockController.dividendByInterval.addListener(() {
+      setState(() {});
+    });
+  }
+
+  Future<void> _dividendsByInterval() async {
+    dividends = await stockController.sumAllDividendByMonth();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBarWidget(),
         body: Column(
-          children: [StockCardWidget()],
+          children: [
+            Row(
+              children: [
+                Text(stockController.dividendByInterval.value.isNotEmpty
+                    ? stockController.dividendByInterval.value[0]['begin']
+                        .toString()
+                    : 'bbb')
+              ],
+            ),
+            StockCardWidget(),
+          ],
         ),
         backgroundColor: AppColors.primaryLight,
         floatingActionButton: FloatingActionButton.extended(

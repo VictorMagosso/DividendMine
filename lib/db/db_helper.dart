@@ -14,6 +14,7 @@ class DatabaseHelper {
   String quantity = 'quantity';
   String valuePerStock = 'valuePerStock';
   String stockCode = 'stockCode';
+  String dateReceiving = 'dateReceiving';
 
   // ignore: unused_element
 
@@ -34,7 +35,7 @@ class DatabaseHelper {
   FutureOr<void> _createDb(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $tableName ($id INTEGER PRIMARY KEY AUTOINCREMENT, $stockCode TEXT,' +
-            '$quantity INTEGER, $valuePerStock DOUBLE)');
+            '$quantity INTEGER, $valuePerStock DOUBLE, $dateReceiving INTEGER)');
   }
 
   FutureOr<int> persist(Stock stock) async {
@@ -60,14 +61,14 @@ class DatabaseHelper {
     return Stock.fromMap(res.first);
   }
 
-  FutureOr<String> update(Stock stock) async {
+  FutureOr<bool> update(Stock stock) async {
     Database db = await this.database;
     try {
       await db.update(tableName, stock.toMap(),
           where: '$id = ?', whereArgs: [stock.id]);
-      return 'O item ${stock.stockCode.toUpperCase()} foi atuallizado!';
+      return true;
     } catch (e) {
-      return 'Não foi possível deletar.';
+      return false;
     }
   }
 

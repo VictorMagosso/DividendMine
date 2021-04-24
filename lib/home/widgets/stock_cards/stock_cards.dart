@@ -4,10 +4,14 @@ import 'dart:ui';
 
 import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/core/core.dart';
+import 'package:DividendMine/home/widgets/sum_up/sum_app.dart';
 import 'package:DividendMine/model/stock.dart';
 import 'package:DividendMine/utils/format_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:intl/intl.dart';
 
 class StockCardWidget extends StatefulWidget {
   @override
@@ -42,14 +46,9 @@ class _StockCardWidgetState extends State<StockCardWidget>
       vsync: this,
     );
     rotationController.repeat();
-
-    slideController = AnimationController(
-      duration: const Duration(milliseconds: 5000),
-      vsync: this,
-    );
-    slideController.repeat();
     super.initState();
     fetchStocks();
+    stockController.sumAllDividendByMonth();
   }
 
   void fetchStocks() async {
@@ -101,11 +100,12 @@ class _StockCardWidgetState extends State<StockCardWidget>
 
   _allStocks(BuildContext context, int index) {
     return GestureDetector(
+      onTap: () => _showDialog(allStocks[index]),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Container(
           width: double.maxFinite,
-          height: 145,
+          height: 157,
           child: Stack(
             children: [
               Container(
@@ -124,28 +124,39 @@ class _StockCardWidgetState extends State<StockCardWidget>
                           direction: Axis.horizontal,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
+                            Column(
                               children: [
-                                allStocks[index].stockCode[
-                                            allStocks[index].stockCode.length -
+                                Row(
+                                  children: [
+                                    allStocks[index].stockCode[allStocks[index]
+                                                    .stockCode
+                                                    .length -
                                                 1] ==
-                                        '1'
-                                    ? Icon(
-                                        Icons.apartment_sharp,
-                                        color: AppColors.secondary,
-                                      )
-                                    : Icon(
-                                        Icons.work_outline,
-                                        color: AppColors.secondary,
-                                      ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(allStocks[index].stockCode,
-                                      style: TextStyle(
-                                          color: colors
-                                              .elementAt(Random().nextInt(3)),
-                                          fontSize: 24)),
+                                            '1'
+                                        ? Icon(
+                                            Icons.apartment_sharp,
+                                            color: AppColors.secondary,
+                                          )
+                                        : Icon(
+                                            Icons.work_outline,
+                                            color: AppColors.secondary,
+                                          ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 1),
+                                      child: Text(allStocks[index].stockCode,
+                                          style: TextStyle(
+                                              color: colors.elementAt(
+                                                  Random().nextInt(3)),
+                                              fontSize: 24)),
+                                    ),
+                                  ],
                                 ),
+                                Text(
+                                    'Recebimento dia ${allStocks[index].dateReceiving}',
+                                    style: TextStyle(
+                                        color: colors
+                                            .elementAt(Random().nextInt(3)),
+                                        fontSize: 10)),
                               ],
                             ),
                             Row(
@@ -228,6 +239,84 @@ class _StockCardWidgetState extends State<StockCardWidget>
     });
   }
 
+  void _showDialog(Stock stock) {
+    var id = stock.id;
+    var stockCode = stock.stockCode;
+    var _stockCodeController = TextEditingController(
+      text: stock.stockCode,
+    );
+    var _qttController = TextEditingController(
+      text: stock.quantity.toString(),
+    );
+    var _valPerStockController = MoneyMaskedTextController(
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+    );
+    _valPerStockController.text = stock.valuePerStock.toString();
+    var _dateReceiveController = TextEditingController(
+      text: stock.dateReceiving.toString(),
+    );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Info - $stockCode',
+            ),
+            content: Form(
+                child: Container(
+              height: 330,
+              child: ListView(
+                children: [
+                  TextFormField(
+                    controller: _stockCodeController,
+                    textCapitalization: TextCapitalization.characters,
+                    maxLength: 6,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                    onChanged: (_) => stockCode = _stockCodeController.text,
+                    decoration: InputDecoration(labelText: 'Código do papel'),
+                  ),
+                  TextFormField(
+                    controller: _qttController,
+                    decoration: InputDecoration(labelText: 'Quantidade'),
+                  ),
+                  TextFormField(
+                    controller: _valPerStockController,
+                    decoration: InputDecoration(
+                      labelText: 'Retorno por cota',
+                      prefix: Text(
+                        'R\$ ',
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: _dateReceiveController,
+                    decoration:
+                        InputDecoration(labelText: 'Previsão do recebimento'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: FloatingActionButton.extended(
+                      onPressed: () {
+                        var updatedStock = Stock(
+                            int.parse(_qttController.text),
+                            double.parse(_valPerStockController.text
+                                .replaceAll(',', '.')),
+                            _stockCodeController.text.toUpperCase(),
+                            int.parse(_dateReceiveController.text));
+                        _updateStock(id!, updatedStock, context);
+                      },
+                      label: Text('Atualizar'),
+                      icon: Icon(Icons.refresh),
+                    ),
+                  )
+                ],
+              ),
+            )),
+          );
+        });
+  }
+
   void deleteStock(int id, String stock) {
     showDialog(
         context: context,
@@ -298,4 +387,11 @@ class _StockCardWidgetState extends State<StockCardWidget>
         ));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+}
+
+FutureOr<void> _updateStock(int id, Stock stock, BuildContext context) async {
+  try {
+    await stockController.updateStock(id, stock);
+    Navigator.pop(context);
+  } catch (Exception) {}
 }
