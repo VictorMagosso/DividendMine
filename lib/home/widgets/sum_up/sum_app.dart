@@ -1,13 +1,10 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/core/app_colors.dart';
-import 'package:DividendMine/core/app_gradients.dart';
 import 'package:DividendMine/core/app_texts.dart';
 import 'package:DividendMine/utils/format_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class SumUp extends StatefulWidget {
   @override

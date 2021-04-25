@@ -7,7 +7,7 @@ class StockController with ChangeNotifier {
   static DatabaseHelper db = DatabaseHelper();
 
   double totalDividend = 0;
-  List<dynamic> dividendByInterval = [];
+  ValueNotifier<List<dynamic>> dividendByInterval = ValueNotifier([]);
   List<Stock> allStocks = [];
 
   Future<bool> persistStock(Stock stock) async {
@@ -21,9 +21,9 @@ class StockController with ChangeNotifier {
     return await db.delete(id);
   }
 
-  FutureOr<void> updateStock(int id, Stock stock) async {
+  FutureOr<bool> updateStock(int id, Stock stock) async {
     stock.id = id;
-    await db.update(stock);
+    return await db.update(stock);
   }
 
   FutureOr<List<Stock>> getAllStocks() async {
@@ -50,11 +50,10 @@ class StockController with ChangeNotifier {
       return 0;
     }
     totalDividend = allDividends.reduce((a, b) => a + b);
-    notifyListeners();
     return totalDividend;
   }
 
-  void sumAllDividendByMonth() async {
+  Future<dynamic> sumAllDividendByMonth() async {
     var begin = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     var firstQuarter = [10, 11, 12, 13, 14, 15, 16, 17, 18];
     var lastQuarter = [19, 20, 21, 22, 23, 24, 25];
@@ -107,8 +106,8 @@ class StockController with ChangeNotifier {
         : tempObj['end'] = 0.0;
 
     objList.add(tempObj);
-
-    dividendByInterval = objList;
+    dividendByInterval.value = objList;
     notifyListeners();
+    return dividendByInterval.value;
   }
 }

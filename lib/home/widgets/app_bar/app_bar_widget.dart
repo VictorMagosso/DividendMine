@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:DividendMine/home/widgets/sum_up/sum_app.dart';
 
 import '../../../core/core.dart';

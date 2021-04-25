@@ -251,7 +251,7 @@ class _AddStockPageState extends State<AddStockPage> {
     );
   }
 
-  Future<void> saveOrUpdateStock(BuildContext context) async {
+  Future<bool> saveOrUpdateStock(BuildContext context) async {
     Stock newStock = Stock(
         int.parse(qttController.text),
         double.parse(valPerStockController.text.replaceAll(',', '.')),
@@ -264,17 +264,17 @@ class _AddStockPageState extends State<AddStockPage> {
       for (var stock in _allStocks) {
         if (stock.stockCode == newStock.stockCode) {
           newStock.id = stock.id;
-          stockController.updateStock(stock.id!, newStock);
           Navigator.pop(context);
-          break;
-        } else {
-          res = await stockController.persistStock(newStock);
+          res = stockController.updateStock(stock.id!, newStock);
+          return res;
         }
       }
     } else {
       res = await stockController.persistStock(newStock);
+      Navigator.pop(context);
+      return res;
     }
-
-    res ? Navigator.pop(context) : '';
+    Navigator.pop(context);
+    return await stockController.persistStock(newStock);
   }
 }

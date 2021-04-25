@@ -6,14 +6,10 @@ import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/core/core.dart';
 import 'package:DividendMine/home/widgets/sum_up/sum_app.dart';
 import 'package:DividendMine/model/stock.dart';
-import 'package:DividendMine/pages/home_page.dart';
 import 'package:DividendMine/utils/format_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class StockCardWidget extends StatefulWidget {
   @override
@@ -65,15 +61,11 @@ class _StockCardWidgetState extends State<StockCardWidget>
     return allStocks.length != 0
         ? Expanded(
             child: RefreshIndicator(
-              child: Consumer<StockController>(
-                builder: (context, value, child) {
-                  return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 14),
-                    itemCount: allStocks.length,
-                    itemBuilder: (context, index) {
-                      return _allStocks(context, index);
-                    },
-                  );
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 14),
+                itemCount: allStocks.length,
+                itemBuilder: (context, index) {
+                  return _allStocks(context, index);
                 },
               ),
               onRefresh: _getStocks,

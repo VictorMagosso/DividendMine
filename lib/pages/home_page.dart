@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/home/widgets/app_bar/app_bar_widget.dart';
 import 'package:DividendMine/home/widgets/stock_cards/stock_cards.dart';
 import 'package:DividendMine/pages/add_stock_page.dart';
 import 'package:DividendMine/utils/format_handler.dart';
-import 'package:provider/provider.dart';
 import '../core/core.dart';
 import 'package:flutter/material.dart';
 
@@ -20,64 +17,83 @@ class _HomePageState extends State<HomePage> {
   String _labelFab = 'Adicionar';
   Color _fabBgColor = AppColors.secondary;
   Icon _icon = Icon(Icons.add);
+  //controllers
   var stockController = StockController();
+
   var dividends = [];
   var formatHandler = MoneyFormatter();
 
   Future<void> _dividendsByInterval() async {
-    stockController.sumAllDividendByMonth();
+    await stockController.sumAllDividendByMonth();
+  }
+
+  @override
+  void initState() {
+    _dividendsByInterval();
+    super.initState();
+    fetchDividendsByInterval();
+  }
+
+  void fetchDividendsByInterval() {
+    stockController.dividendByInterval.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _dividendsByInterval();
-
     return Scaffold(
         appBar: AppBarWidget(),
-        body: Consumer<StockController>(
-          builder: (context, stockController, widget) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                        stockController.dividendByInterval.isNotEmpty
-                            ? '1 a 9\n${formatHandler.moneyHandler(stockController.dividendByInterval[0]['begin'])}'
-                                .toString()
-                            : '1 a 9\n0,00',
-                        style: AppTextStyles.monthText,
-                      ),
-                      Text(
-                        stockController.dividendByInterval.isNotEmpty
-                            ? '10 a 18\n${formatHandler.moneyHandler(stockController.dividendByInterval[0]['firstQuarter'])}'
-                                .toString()
-                            : '10 a 18\n0,00',
-                        style: AppTextStyles.monthText,
-                      ),
-                      Text(
-                        stockController.dividendByInterval.isNotEmpty
-                            ? '19 a 25\n${formatHandler.moneyHandler(stockController.dividendByInterval[0]['lastQuarter'])}'
-                                .toString()
-                            : '19 a 25\n0,00',
-                        style: AppTextStyles.monthText,
-                      ),
-                      Text(
-                        stockController.dividendByInterval.isNotEmpty
-                            ? '26 a 31\n${formatHandler.moneyHandler(stockController.dividendByInterval[0]['end'])}'
-                                .toString()
-                            : '26 a 31\n0,00',
-                        style: AppTextStyles.monthText,
-                      ),
-                    ],
-                  ),
+        body: Column(
+          children: [
+            GestureDetector(
+              onTap: () => _refreshDividends(),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Icon(
+                  Icons.refresh,
+                  color: AppColors.accent,
+                  size: 30,
                 ),
-                StockCardWidget(),
-              ],
-            );
-          },
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.only(bottom: 18),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      stockController.dividendByInterval.value.isNotEmpty
+                          ? '1 a 9\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['begin'])}'
+                              .toString()
+                          : '1 a 9\n0,00',
+                      style: AppTextStyles.monthText,
+                    ),
+                    Text(
+                      stockController.dividendByInterval.value.isNotEmpty
+                          ? '10 a 18\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['firstQuarter'])}'
+                              .toString()
+                          : '10 a 18\n0,00',
+                      style: AppTextStyles.monthText,
+                    ),
+                    Text(
+                      stockController.dividendByInterval.value.isNotEmpty
+                          ? '19 a 25\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['lastQuarter'])}'
+                              .toString()
+                          : '19 a 25\n0,00',
+                      style: AppTextStyles.monthText,
+                    ),
+                    Text(
+                      stockController.dividendByInterval.value.isNotEmpty
+                          ? '26 a 31\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['end'])}'
+                              .toString()
+                          : '26 a 31\n0,00',
+                      style: AppTextStyles.monthText,
+                    ),
+                  ],
+                )),
+            StockCardWidget(),
+          ],
         ),
         backgroundColor: AppColors.primaryLight,
         floatingActionButton: FloatingActionButton.extended(
@@ -105,5 +121,11 @@ class _HomePageState extends State<HomePage> {
         transitionDuration: Duration(milliseconds: 300),
       ),
     );
+  }
+
+  void _refreshDividends() {
+    setState(() {
+      stockController.sumAllDividendByMonth();
+    });
   }
 }
