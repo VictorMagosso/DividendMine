@@ -22,15 +22,20 @@ class _AddStockPageState extends State<AddStockPage> {
   var dateController = TextEditingController();
 
   var valPerStockController = MoneyMaskedTextController(
-    decimalSeparator: ',',
-    thousandSeparator: '.',
-  );
+      decimalSeparator: ',', thousandSeparator: '.', precision: 2);
 
   var _stockFilled = '';
   var _valueDividend = '';
+  var _allStocks;
+
+  Future<List<Stock>> _getAllStocks() async {
+    _allStocks = await stockController.getAllStocks();
+    return _allStocks;
+  }
 
   @override
   Widget build(BuildContext context) {
+    _getAllStocks();
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: AppGradients.addStockBg),
@@ -111,7 +116,7 @@ class _AddStockPageState extends State<AddStockPage> {
                 controller: qttController,
                 onChanged: (value) {
                   setState(() {
-                    print('qttController: ' + value);
+                    value.isEmpty ? value = '0' : value = value;
                     _valueDividend = formatMoney.moneyHandler((int.parse(
                             value) *
                         double.parse(
@@ -119,6 +124,8 @@ class _AddStockPageState extends State<AddStockPage> {
                   });
                 },
                 keyboardType: TextInputType.number,
+                maxLength: 6,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
                 style: AppTextStyles.inputStock,
                 decoration: InputDecoration(
                   prefixIcon: Icon(
@@ -144,13 +151,15 @@ class _AddStockPageState extends State<AddStockPage> {
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: TextField(
                 controller: valPerStockController,
+                maxLength: 5,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
                   setState(() {
-                    print('valPerStock: ' + value);
-                    _valueDividend = formatMoney.moneyHandler(
-                        (int.parse(qttController.text) *
-                            double.parse(value.replaceAll(',', '.'))));
+                    _valueDividend = formatMoney.moneyHandler((int.parse(
+                            qttController.text) *
+                        double.parse(
+                            valPerStockController.text.replaceAll(',', '.'))));
                   });
                 },
                 style: AppTextStyles.inputStock,
@@ -243,14 +252,29 @@ class _AddStockPageState extends State<AddStockPage> {
   }
 
   Future<void> saveOrUpdateStock(BuildContext context) async {
-    Stock stock = Stock(
+    Stock newStock = Stock(
         int.parse(qttController.text),
         double.parse(valPerStockController.text.replaceAll(',', '.')),
         codeController.text.toUpperCase(),
         int.parse(dateController.text));
-    var res = await stockController.persistStock(stock);
 
-    // ignore: unnecessary_statements
+    var res;
+
+    if (_allStocks.length > 0) {
+      for (var stock in _allStocks) {
+        if (stock.stockCode == newStock.stockCode) {
+          newStock.id = stock.id;
+          stockController.updateStock(stock.id!, newStock);
+          Navigator.pop(context);
+          break;
+        } else {
+          res = await stockController.persistStock(newStock);
+        }
+      }
+    } else {
+      res = await stockController.persistStock(newStock);
+    }
+
     res ? Navigator.pop(context) : '';
   }
 }

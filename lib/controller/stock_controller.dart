@@ -6,23 +6,9 @@ import '../db/db_helper.dart';
 class StockController with ChangeNotifier {
   static DatabaseHelper db = DatabaseHelper();
 
-  final ValueNotifier<double> _totalDividend = ValueNotifier<double>(0);
-  ValueNotifier<double> get totalDividend => _totalDividend;
-  set totalDividend(value) {
-    totalDividend.value = value;
-    notifyListeners();
-  }
-
-  final ValueNotifier<List<dynamic>> _dividendByInterval = ValueNotifier([]);
-
-  ValueNotifier<List<dynamic>> get dividendByInterval => _dividendByInterval;
-  set dividendByInterval(value) {
-    dividendByInterval.value = value;
-    notifyListeners();
-  }
-
-  final ValueNotifier<List<Stock>> _allStocks = ValueNotifier([]);
-  ValueNotifier<List<Stock>> get allStocks => _allStocks;
+  double totalDividend = 0;
+  List<dynamic> dividendByInterval = [];
+  List<Stock> allStocks = [];
 
   Future<bool> persistStock(Stock stock) async {
     if (await db.persist(stock) == 0) {
@@ -45,6 +31,7 @@ class StockController with ChangeNotifier {
     await db.getAllStocks().then((res) {
       stockList = res;
     });
+    allStocks = stockList;
     return stockList;
   }
 
@@ -62,11 +49,12 @@ class StockController with ChangeNotifier {
     if (allDividends.length == 0) {
       return 0;
     }
-    totalDividend.value = allDividends.reduce((a, b) => a + b);
-    return totalDividend.value;
+    totalDividend = allDividends.reduce((a, b) => a + b);
+    notifyListeners();
+    return totalDividend;
   }
 
-  FutureOr<List<dynamic>> sumAllDividendByMonth() async {
+  void sumAllDividendByMonth() async {
     var begin = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     var firstQuarter = [10, 11, 12, 13, 14, 15, 16, 17, 18];
     var lastQuarter = [19, 20, 21, 22, 23, 24, 25];
@@ -120,8 +108,7 @@ class StockController with ChangeNotifier {
 
     objList.add(tempObj);
 
-    dividendByInterval.value = objList;
-
-    return dividendByInterval.value;
+    dividendByInterval = objList;
+    notifyListeners();
   }
 }
