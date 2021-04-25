@@ -25,6 +25,9 @@ class AppTextStyles {
   static final TextStyle cardText = GoogleFonts.roboto(
       color: AppColors.accent, fontSize: 14, fontWeight: FontWeight.w400);
 
+  static final TextStyle monthText = GoogleFonts.roboto(
+      color: AppColors.accent, fontSize: 11, fontWeight: FontWeight.w400);
+
   static final TextStyle cardTotalMoney = GoogleFonts.roboto(
       color: AppColors.accent, fontSize: 28, fontWeight: FontWeight.w400);
 

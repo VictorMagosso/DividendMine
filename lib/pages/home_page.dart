@@ -4,6 +4,7 @@ import 'package:DividendMine/controller/stock_controller.dart';
 import 'package:DividendMine/home/widgets/app_bar/app_bar_widget.dart';
 import 'package:DividendMine/home/widgets/stock_cards/stock_cards.dart';
 import 'package:DividendMine/pages/add_stock_page.dart';
+import 'package:DividendMine/utils/format_handler.dart';
 import '../core/core.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   Icon _icon = Icon(Icons.add);
   var stockController = StockController();
   var dividends = [];
+  var formatHandler = MoneyFormatter();
 
   @override
   void initState() {
@@ -40,13 +42,41 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBarWidget(),
         body: Column(
           children: [
-            Row(
-              children: [
-                Text(stockController.dividendByInterval.value.isNotEmpty
-                    ? stockController.dividendByInterval.value[0]['begin']
-                        .toString()
-                    : 'bbb')
-              ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    stockController.dividendByInterval.value.isNotEmpty
+                        ? '1 a 9\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['begin'])}'
+                            .toString()
+                        : '0,00',
+                    style: AppTextStyles.monthText,
+                  ),
+                  Text(
+                    stockController.dividendByInterval.value.isNotEmpty
+                        ? '10 a 18\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['firstQuarter'])}'
+                            .toString()
+                        : '0,00',
+                    style: AppTextStyles.monthText,
+                  ),
+                  Text(
+                    stockController.dividendByInterval.value.isNotEmpty
+                        ? '19 a 25\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['lastQuarter'])}'
+                            .toString()
+                        : '0,00',
+                    style: AppTextStyles.monthText,
+                  ),
+                  Text(
+                    stockController.dividendByInterval.value.isNotEmpty
+                        ? '26 a 31\n${formatHandler.moneyHandler(stockController.dividendByInterval.value[0]['end'])}'
+                            .toString()
+                        : '0,00',
+                    style: AppTextStyles.monthText,
+                  ),
+                ],
+              ),
             ),
             StockCardWidget(),
           ],
