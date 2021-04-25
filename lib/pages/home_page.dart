@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool _isPressed = false;
   bool _isVisible = false;
   String _labelFab = 'Adicionar';
@@ -27,8 +27,15 @@ class _HomePageState extends State<HomePage> {
     await stockController.sumAllDividendByMonth();
   }
 
+  var rotationController;
+
   @override
   void initState() {
+    rotationController = AnimationController(
+      duration: const Duration(milliseconds: 1800),
+      vsync: this,
+    );
+    rotationController.forward();
     _dividendsByInterval();
     super.initState();
     fetchDividendsByInterval();
@@ -47,13 +54,19 @@ class _HomePageState extends State<HomePage> {
         body: Column(
           children: [
             GestureDetector(
-              onTap: () => _refreshDividends(),
+              onTap: () {
+                _refreshDividends();
+              },
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
-                child: Icon(
-                  Icons.refresh,
-                  color: AppColors.accent,
-                  size: 30,
+                child: RotationTransition(
+                  turns:
+                      Tween(begin: 0.0, end: 1.0).animate(rotationController),
+                  child: Icon(
+                    Icons.refresh,
+                    color: AppColors.accent,
+                    size: 30,
+                  ),
                 ),
               ),
             ),
@@ -124,6 +137,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _refreshDividends() {
+    RotationTransition(
+        turns: Tween(begin: 0.0, end: 1.0).animate(rotationController));
     setState(() {
       stockController.sumAllDividendByMonth();
     });
