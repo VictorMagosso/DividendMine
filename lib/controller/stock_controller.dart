@@ -107,6 +107,7 @@ class StockController with ChangeNotifier {
 
     objList.add(tempObj);
     dividendByInterval.value = objList;
+
     notifyListeners();
     return dividendByInterval.value;
   }
